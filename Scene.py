@@ -132,6 +132,8 @@ class GameScene(Scene):
         self.hailGroup = pygame.sprite.Group()
         self.hailPool = HailPool(self, self.hailGroup)
 
+        self.damageGroup = pygame.sprite.Group()
+
         self.updraft = Updraft(self.hailGroup)
 
         self.curSummonDelay = 0
@@ -144,6 +146,7 @@ class GameScene(Scene):
         self.updraft.update(deltaTime)
         self.hailGroup.update(deltaTime)
         self.UIGroup.update(deltaTime)
+        self.damageGroup.update(deltaTime)
         self.mapGroup.update(deltaTime)
 
         self.curSummonDelay += deltaTime
@@ -161,6 +164,7 @@ class GameScene(Scene):
         self.hailGroup.draw(screen)
         self.mapGroup.draw(screen)
         self.updraft.draw(screen)
+        self.damageGroup.draw(screen)
         self.UIGroup.draw(screen)
     
     def loadUI(self):

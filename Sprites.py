@@ -273,7 +273,7 @@ class BaseObject(BaseSprite):
         self.HP -= damageValue
         damage = Damage(damageValue)
         damage.Position = position
-        self.scene.UIGroup.add(damage)
+        self.scene.damageGroup.add(damage)
 
 class Ground(BaseObject):
     def __init__(self, width, height):
