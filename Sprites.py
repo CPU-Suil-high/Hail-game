@@ -129,9 +129,18 @@ class Hail(BaseSprite):
         self.velocity += force / self.mess
 
     def collision(self, deltaTime):
-        if (self.Bottom < self.scene.height/3*2):
+        if (self.Position.y < 0):
             return
-        for sprite in self.scene.mapGroup:
+        elif (self.Position.y <= self.scene.height/3):
+            group = self.scene.topObjectGroup
+        elif (self.Position.y <= self.scene.height/3*2):
+            group = self.scene.middleObjectGroup
+        else:
+            group = self.scene.bottomObjectGroup
+
+        for sprite in group:
+            if (sprite.state == "fadeIn"):
+                continue
             if (pygame.sprite.collide_mask(self, sprite)):
                 self.Position -= self.velocity * deltaTime
 
@@ -221,7 +230,7 @@ class Updraft(BaseSprite):
         self.Image = image
 
 class BaseObject(BaseSprite):
-    def __init__(self, maxHp, score, scene, fadeTime):
+    def __init__(self, maxHp, score, scene, fadeTime, fallingSpeed):
         self.hp = maxHp
         self.maxHp = maxHp
         self.score = score
@@ -229,6 +238,7 @@ class BaseObject(BaseSprite):
         self.state = "fadeOut"
         self.maxFadeTime = fadeTime
         self.curFadeTime = 0
+        self.fallingSpeed = fallingSpeed
         super().__init__()
     
     def update(self, deltaTime):
@@ -248,14 +258,15 @@ class BaseObject(BaseSprite):
             if (self.curFadeTime <= 0):
                 super().kill()
 
-            self.Position += Vector2(0, deltaTime*self.Rect.height/30)
+            self.Position += Vector2(0, deltaTime*self.fallingSpeed)
         
-        self.loadImage()
-    
+        alpha = self.curFadeTime/self.maxFadeTime*255
+        self.image.set_alpha(alpha)
+
     def loadImage(self):
         alpha = self.curFadeTime/self.maxFadeTime*255
         self.image.set_alpha(alpha)
-    
+
     def kill(self):
         self.scene.score.scoreValue += self.score
         self.remove()
@@ -281,7 +292,7 @@ class Ground(BaseObject):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        super().__init__(0, 0, None, 0)
+        super().__init__(0, 0, None, 0, 0)
 
     @property
     def HP(self):
@@ -303,9 +314,11 @@ class Ground(BaseObject):
 
 class Building(BaseObject):
     def __init__(self, scene):
-        maxHp = 100
-        score = 2
-        super().__init__(maxHp, score, scene, 1)
+        maxHp = 80
+        score = 3
+        fadeTime = 1
+        fallingSpeed = 4
+        super().__init__(maxHp, score, scene, fadeTime, fallingSpeed)
     
     def loadImage(self):
         image = pygame.Surface((50, 100), pygame.SRCALPHA, 32)
@@ -326,8 +339,10 @@ class Building(BaseObject):
 class House(BaseObject):
     def __init__(self, scene):
         maxHp = 50
-        score = 1
-        super().__init__(maxHp, score, scene, 1)
+        score = 2
+        fadeTime = 1
+        fallingSpeed = 3
+        super().__init__(maxHp, score, scene, fadeTime, fallingSpeed)
     
     def loadImage(self):
         image = pygame.Surface((50, 50), pygame.SRCALPHA, 32)
@@ -339,6 +354,38 @@ class House(BaseObject):
 
         image.fill((94, 64, 0), (20, 30, 10, 20))
         image.fill((0,0,0), (26, 39, 2, 2))
+
+        self.Image = image
+
+        super().loadImage()
+
+class Airplane(BaseObject):
+    def __init__(self, scene, direction, speed):
+        maxHp = 30
+        score = 1
+        fallingSpeed = 5
+
+        self.speed = speed
+
+        if (direction == "left"):
+            self.direction = -1
+        elif (direction == "right"):
+            self.direction = 1
+
+        super().__init__(maxHp, score, scene, 1, fallingSpeed)
+
+    def update(self, deltaTime):
+        super().update(deltaTime)
+        self.Position += Vector2(self.speed*deltaTime*self.direction, 0)
+
+        if (self.direction == 1 and self.Left > self.scene.width):
+            self.Right = 0
+        elif (self.direction == -1 and self.Right < 0):
+            self.Left = self.scene.width
+    
+    def loadImage(self):
+        image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
+        image.fill((71, 142, 255))
 
         self.Image = image
 

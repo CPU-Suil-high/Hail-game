@@ -55,7 +55,9 @@ class StartScene(Scene):
 
         self.backgroundGroup = pygame.sprite.Group()
 
-        self.mapGroup = pygame.sprite.Group()
+        self.bottomObjectGroup = pygame.sprite.Group()
+        self.middleObjectGroup = pygame.sprite.Group()
+        self.topObjectGroup = pygame.sprite.Group()
 
         self.hailGroup = pygame.sprite.Group()
         self.hailPool = HailPool(self, self.hailGroup)
@@ -80,8 +82,14 @@ class StartScene(Scene):
     
     def Render(self, screen):
         self.backgroundGroup.draw(screen)
+
         self.hailGroup.draw(screen)
-        self.mapGroup.draw(screen)
+
+        self.bottomObjectGroup.draw(screen)
+        self.middleObjectGroup.draw(screen)
+        self.topObjectGroup.draw(screen)
+
+        self.ground.draw(screen)
         self.UIGroup.draw(screen)
     
     def loadUI(self):
@@ -98,7 +106,7 @@ class StartScene(Scene):
         self.ground = Ground(self.width, self.height)
         self.ground.Position = (self.width/2, 0)
         self.ground.Bottom = self.height
-        self.mapGroup.add(self.ground)
+        self.bottomObjectGroup.add(self.ground)
     
     def loadBackground(self):
         background = Background(self.width, self.height)
@@ -127,7 +135,9 @@ class GameScene(Scene):
 
         self.backgroundGroup = pygame.sprite.Group()
 
-        self.mapGroup = pygame.sprite.Group()
+        self.bottomObjectGroup = pygame.sprite.Group()
+        self.middleObjectGroup = pygame.sprite.Group()
+        self.topObjectGroup = pygame.sprite.Group()
 
         self.hailGroup = pygame.sprite.Group()
         self.hailPool = HailPool(self, self.hailGroup)
@@ -147,26 +157,34 @@ class GameScene(Scene):
         self.hailGroup.update(deltaTime)
         self.UIGroup.update(deltaTime)
         self.damageGroup.update(deltaTime)
-        self.mapGroup.update(deltaTime)
+
+        self.bottomObjectGroup.update(deltaTime)
+        self.middleObjectGroup.update(deltaTime)
+        self.topObjectGroup.update(deltaTime)
 
         self.curSummonDelay += deltaTime
 
         self.summonHail()
         
-        if (len(self.mapGroup) < 2):
-            self.summonObjects()
+        self.summonObjects()
 
     def ProcessInput(self, events, pressed_keys, deltaTime):
         self.updraft.processInput(events, pressed_keys, deltaTime)
 
     def Render(self, screen):
         self.backgroundGroup.draw(screen)
+
         self.hailGroup.draw(screen)
-        self.mapGroup.draw(screen)
-        self.updraft.draw(screen)
+
+        self.bottomObjectGroup.draw(screen)
+        self.middleObjectGroup.draw(screen)
+        self.topObjectGroup.draw(screen)
+
         self.damageGroup.draw(screen)
-        self.UIGroup.draw(screen)
         self.ground.draw(screen)
+        self.UIGroup.draw(screen)
+
+        self.updraft.draw(screen)
     
     def loadUI(self):
         timer = Timer(self.timeLimit, lambda : self.SwitchToScene(EndScene, self.width, self.height, self.score.scoreValue))
@@ -183,18 +201,32 @@ class GameScene(Scene):
         self.ground = Ground(self.width, self.height)
         self.ground.Position = (self.width/2, 0)
         self.ground.Bottom = self.height
-        self.mapGroup.add(self.ground)
+        self.bottomObjectGroup.add(self.ground)
 
         self.summonObjects()
     
     def summonObjects(self):
-        for i in range(1, 6):
-            obj = random.choice([Building(self), House(self)])
+        if (len(self.bottomObjectGroup) == 1):
+            for i in range(1, 6):
+                obj = random.choice([Building(self), House(self)])
 
-            obj.Bottom = self.ground.Top
-            obj.Position = i*self.width/6, obj.Position.y
+                obj.Bottom = self.ground.Top
+                obj.Position = i*self.width/6, obj.Position.y
 
-            self.mapGroup.add(obj)
+                self.bottomObjectGroup.add(obj)
+
+        if (len(self.middleObjectGroup) == 0):
+            for i in range(2):
+                direction = random.choice(("left", "right"))
+                speed = randint(3, 6)
+                obj = Airplane(self, direction, speed)
+                obj.Position = 0, self.height/9*(4+i)
+                if (direction == "left"):
+                    obj.Right = 0
+                else:
+                    obj.Left = self.width
+
+                self.middleObjectGroup.add(obj)
 
     def loadBackground(self):
         background = Background(self.width, self.height)
