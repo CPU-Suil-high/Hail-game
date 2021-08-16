@@ -247,6 +247,8 @@ class BaseObject(BaseSprite):
 
             if (self.curFadeTime <= 0):
                 super().kill()
+
+            self.Position += Vector2(0, deltaTime*self.Rect.height/30)
         
         self.loadImage()
     
@@ -303,7 +305,7 @@ class Building(BaseObject):
     def __init__(self, scene):
         maxHp = 100
         score = 2
-        super().__init__(maxHp, score, scene, 0.5)
+        super().__init__(maxHp, score, scene, 1)
     
     def loadImage(self):
         image = pygame.Surface((50, 100), pygame.SRCALPHA, 32)
@@ -325,7 +327,7 @@ class House(BaseObject):
     def __init__(self, scene):
         maxHp = 50
         score = 1
-        super().__init__(maxHp, score, scene, 0.5)
+        super().__init__(maxHp, score, scene, 1)
     
     def loadImage(self):
         image = pygame.Surface((50, 50), pygame.SRCALPHA, 32)

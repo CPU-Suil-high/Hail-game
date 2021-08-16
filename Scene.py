@@ -166,6 +166,7 @@ class GameScene(Scene):
         self.updraft.draw(screen)
         self.damageGroup.draw(screen)
         self.UIGroup.draw(screen)
+        self.ground.draw(screen)
     
     def loadUI(self):
         timer = Timer(self.timeLimit, lambda : self.SwitchToScene(EndScene, self.width, self.height, self.score.scoreValue))
