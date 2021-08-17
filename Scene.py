@@ -147,7 +147,7 @@ class GameScene(Scene):
         self.updraft = Updraft(self.hailGroup)
 
         self.curSummonDelay = 0
-        self.maxSummonDelay = 0.8
+        self.maxSummonDelay = 0.6
 
         self.loadBackground()
         self.loadMap()
