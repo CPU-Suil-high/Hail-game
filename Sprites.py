@@ -141,6 +141,9 @@ class Hail(BaseSprite):
         for sprite in group:
             if (sprite.state == "fadeIn"):
                 continue
+            if (not pygame.sprite.collide_rect(self, sprite)):
+                continue
+
             if (pygame.sprite.collide_mask(self, sprite)):
                 self.Position -= self.velocity * deltaTime
 
