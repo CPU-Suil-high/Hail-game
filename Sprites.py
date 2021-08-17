@@ -396,22 +396,22 @@ class Damage(BaseSprite):
         self.damageValue = damageValue
         self.maxKillDelay = 40
         self.curKillDelay = 0
+        self.riseSpeed = 1
         super().__init__()
     
     def update(self, deltaTime):
+        self.Position += Vector2(0, -self.riseSpeed*deltaTime)
         self.curKillDelay += deltaTime
 
         if (self.curKillDelay >= self.maxKillDelay):
             self.kill()
         
-        self.loadImage()
+        alpha = ((self.maxKillDelay/2) - (self.curKillDelay - self.maxKillDelay/2)) / (self.maxKillDelay/2) * 255
+        self.image.set_alpha(alpha)
     
     def loadImage(self):
         font = pygame.font.SysFont("Arial", 13)
         image = font.render(str(self.damageValue), True, (255, 0, 0))
-
-        alpha = ((self.maxKillDelay/2) - (self.curKillDelay - self.maxKillDelay/2)) / (self.maxKillDelay/2) * 255
-        image.set_alpha(alpha)
 
         self.Image = image
 
