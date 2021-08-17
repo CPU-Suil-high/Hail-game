@@ -391,6 +391,38 @@ class Airplane(BaseObject):
 
         super().loadImage()
 
+class Satellite(BaseObject):
+    def __init__(self, scene, direction, speed):
+        maxHp = 30
+        score = 1
+        fallingSpeed = 5
+
+        self.speed = speed
+
+        if (direction == "left"):
+            self.direction = -1
+        elif (direction == "right"):
+            self.direction = 1
+
+        super().__init__(maxHp, score, scene, 1, fallingSpeed)
+
+    def update(self, deltaTime):
+        super().update(deltaTime)
+        self.Position += Vector2(self.speed*deltaTime*self.direction, 0)
+
+        if (self.direction == 1 and self.Left > self.scene.width):
+            self.Right = 0
+        elif (self.direction == -1 and self.Right < 0):
+            self.Left = self.scene.width
+    
+    def loadImage(self):
+        image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
+        image.fill((217, 159, 0))
+
+        self.Image = image
+
+        super().loadImage()
+
 class Damage(BaseSprite):
     def __init__(self, damageValue):
         self.damageValue = damageValue

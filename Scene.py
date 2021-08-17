@@ -215,18 +215,29 @@ class GameScene(Scene):
 
                 self.bottomObjectGroup.add(obj)
 
-        if (len(self.middleObjectGroup) == 0):
+        if (len(self.middleObjectGroup) + len(self.topObjectGroup) == 0):
             for i in range(2):
                 direction = random.choice(("left", "right"))
                 speed = randint(3, 6)
-                obj = Airplane(self, direction, speed)
-                obj.Position = 0, self.height/9*(4+i)
+                airplane = Airplane(self, direction, speed)
+                airplane.Position = 0, self.height/9*(4+i)
                 if (direction == "left"):
-                    obj.Right = 0
+                    airplane.Right = 0
                 else:
-                    obj.Left = self.width
+                    airplane.Left = self.width
 
-                self.middleObjectGroup.add(obj)
+                self.middleObjectGroup.add(airplane)
+        
+            direction = random.choice(("left", "right"))
+            speed = randint(2, 5)
+            satellite = Satellite(self, direction, speed)
+            satellite.Position = 0, self.height/6
+            if (direction == "left"):
+                    satellite.Right = 0
+            else:
+                satellite.Left = self.width
+            
+            self.topObjectGroup.add(satellite)
 
     def loadBackground(self):
         background = Background(self.width, self.height)
