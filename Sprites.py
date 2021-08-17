@@ -446,6 +446,7 @@ class Damage(BaseSprite):
     
     def loadImage(self):
         font = pygame.font.SysFont("Arial", 13)
+        font.set_bold(True)
         image = font.render(str(self.damageValue), True, (255, 0, 0))
 
         self.Image = image
