@@ -84,6 +84,6 @@ if (__name__ == "__main__"):
     setPygame()
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    main(200, Scene.StartScene(WIDTH, HEIGHT))
+    main(300, Scene.StartScene(WIDTH, HEIGHT))
     
     RPC.close()
