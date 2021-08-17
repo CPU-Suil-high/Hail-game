@@ -231,7 +231,7 @@ class GameScene(Scene):
             direction = random.choice(("left", "right"))
             speed = randint(2, 5)
             satellite = Satellite(self, direction, speed)
-            satellite.Position = 0, self.height/6
+            satellite.Position = 0, self.height/9
             if (direction == "left"):
                     satellite.Right = 0
             else:

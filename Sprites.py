@@ -419,8 +419,21 @@ class Satellite(BaseObject):
             self.Left = self.scene.width
     
     def loadImage(self):
-        image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
-        image.fill((217, 159, 0))
+        image = pygame.Surface((70, 15), pygame.SRCALPHA, 32)
+
+        radius = image.get_height()/5*2
+
+        pygame.draw.circle(image, (194, 194, 194), (image.get_width()/2, image.get_height()/2), radius)
+
+        board = pygame.Surface((image.get_width()/2-radius, image.get_height()))
+        board.fill((0, 24, 110))
+        pygame.draw.line(board, (255, 255, 255), [board.get_width()/3, 0], [board.get_width()/3, board.get_height()])
+        pygame.draw.line(board, (255, 255, 255), [board.get_width()/3*2, 0], [board.get_width()/3*2, board.get_height()])
+        pygame.draw.rect(board, (209, 209, 209), board.get_rect(), width=1)
+
+
+        image.blit(board, (0,0))
+        image.blit(board, (image.get_width()/2+radius, 0))
 
         self.Image = image
 
