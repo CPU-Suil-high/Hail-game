@@ -387,8 +387,18 @@ class Airplane(BaseObject):
             self.Left = self.scene.width
     
     def loadImage(self):
-        image = pygame.Surface((50, 20), pygame.SRCALPHA, 32)
-        image.fill((71, 142, 255))
+        image = pygame.Surface((60, 25), pygame.SRCALPHA, 32)
+
+        # body
+        pygame.draw.polygon(image, (222, 222, 222), [(54, 0), (45, 9), (12, 9), (4, 11), (0, 14), (2, 17), (6, 19), (45, 19), (50, 18), (59, 13), (59, 11), (55, 9), (55, 0)])
+        # wings
+        pygame.draw.polygon(image, (200, 200, 200), [(24, 14), (38, 14), (35, 22), (32, 25), (30, 25), (27, 22)])
+        pygame.draw.polygon(image, (200, 200, 200), [(30, 5), (32, 5), (34, 6), (36, 8), (26, 8), (28, 6)])
+        # window
+        pygame.draw.polygon(image, (0, 143, 209), [(12, 8), (4, 10), (0, 14), (4, 16), (9, 14)])
+        
+        if (self.direction == 1):
+            image = pygame.transform.flip(image, True, False)
 
         self.Image = image
 
