@@ -10,6 +10,8 @@ class Scene:
         self.width = width
         self.height = height
 
+        self.easterEgg = False
+
         self.UIGroup = pygame.sprite.Group()
 
         self.loadUI()
@@ -149,6 +151,9 @@ class GameScene(Scene):
         self.curSummonDelay = 0
         self.maxSummonDelay = 0.6
 
+        self.easterEggCommand = "KNMTGCKLE"
+        self.curEasterEggCommand = ""
+
         self.loadBackground()
         self.loadMap()
 
@@ -170,6 +175,17 @@ class GameScene(Scene):
 
     def ProcessInput(self, events, pressed_keys, deltaTime):
         self.updraft.processInput(events, pressed_keys, deltaTime)
+
+        for event in events:
+            if (event.type == pygame.KEYDOWN):
+                self.curEasterEggCommand += event.unicode
+
+                if (len(self.curEasterEggCommand) > len(self.easterEggCommand)):
+                    self.curEasterEggCommand = self.curEasterEggCommand[1:]
+
+                if (encrypt(b"easterEgg", self.curEasterEggCommand.encode()) == self.easterEggCommand.encode()):
+                    self.easterEgg = not self.easterEgg
+                    self.summonAing()
 
     def Render(self, screen):
         self.backgroundGroup.draw(screen)
@@ -258,6 +274,20 @@ class GameScene(Scene):
 
             self.hailGroup.add(hail)
     
+    def summonAing(self):
+        for i in range(0, self.height, 80):
+            aing = Aing(self, 1, random.uniform(50, 60))
+            aing.Position = Vector2(0, i)
+            aing.Right = 0
+
+            self.damageGroup.add(aing)
+
+            aing = Aing(self, -1, random.uniform(50, 60))
+            aing.Position = Vector2(0, i)
+            aing.Left = self.width
+
+            self.damageGroup.add(aing)
+    
 
 class EndScene(Scene):
     def __init__(self, width, height, scoreValue):
@@ -304,3 +334,10 @@ class EndScene(Scene):
         self.scoreTitle.Position = (self.width/2, self.height/4)
 
         self.UIGroup.add(backButton, self.score, self.scoreTitle)
+
+def encrypt(key : bytes, content : bytes):
+    content = bytearray(content)
+    for i in range(len(key)-1):
+        for j in range(len(content)):
+            content[j] = content[j] ^ key[i] ^ (key[i] | key[i+1])
+    return bytes(content)

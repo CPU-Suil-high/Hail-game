@@ -18,6 +18,7 @@ class HailPool:
             hail.Position = (0,0)
             hail.velocity = (0,0)
             hail.radius = radius
+            hail.loadImage()
             hail.bounceCount = 0
 
             return hail

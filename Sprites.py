@@ -192,6 +192,15 @@ class Hail(BaseSprite):
 
         gfxdraw.aacircle(image, *(int(self.radius), int(self.radius)), int(self.radius), (255, 255, 255))
         gfxdraw.filled_circle(image, *(int(self.radius), int(self.radius)), int(self.radius), (255, 255, 255))
+
+        if (self.scene.easterEgg and int(self.radius)*2**0.5 > 13):
+            aing = getAingImage()
+
+            aingRect = aing.get_rect()
+            aingRect.center = (image.get_width()/2, image.get_height()/2)
+
+            image.blit(aing, aingRect)
+
         self.Image = image
 
 class Updraft(BaseSprite):
@@ -287,7 +296,7 @@ class BaseObject(BaseSprite):
     
     def takeDamage(self, damageValue, position):
         self.HP -= damageValue
-        damage = Damage(damageValue)
+        damage = Damage(damageValue, self.scene.easterEgg)
         damage.Position = position
         self.scene.damageGroup.add(damage)
 
@@ -450,11 +459,12 @@ class Satellite(BaseObject):
         super().loadImage()
 
 class Damage(BaseSprite):
-    def __init__(self, damageValue):
+    def __init__(self, damageValue, easterEgg):
         self.damageValue = damageValue
         self.maxKillDelay = 40
         self.curKillDelay = 0
         self.riseSpeed = 1
+        self.easterEgg = easterEgg
         super().__init__()
     
     def update(self, deltaTime):
@@ -468,12 +478,14 @@ class Damage(BaseSprite):
         self.image.set_alpha(alpha)
     
     def loadImage(self):
-        font = pygame.font.SysFont("Arial", 13)
-        font.set_bold(True)
-        image = font.render(str(self.damageValue), True, (255, 0, 0))
+        if (self.easterEgg):
+            image = getAingImage()
+        else:
+            font = pygame.font.SysFont("Arial", 13)
+            font.set_bold(True)
+            image = font.render(str(self.damageValue), True, (255, 0, 0))
 
         self.Image = image
-
 class Button(BaseSprite):
     def __init__(self, name, func):
         self.name = name
@@ -626,3 +638,62 @@ class Text(BaseSprite):
         image = self.font.render(self.textValue, True, self.color)
 
         self.Image = image
+
+class Aing(Text):
+    def __init__(self, scene, direction, speed):
+        self.scene = scene
+
+        textValue = "AING"
+        font = pygame.font.SysFont("Impact", 100)
+        color = (255, 255, 255)
+
+        self.direction = direction
+        self.speed = speed
+        super().__init__(textValue, font, color=color)
+    
+    def update(self, deltaTime):
+        self.Position += Vector2(self.direction*self.speed*deltaTime, 0)
+
+        if (self.direction == 1 and self.Left > self.scene.width):
+            self.kill()
+        elif (self.direction == -1 and self.Right < 0):
+            self.kill()
+
+
+def getAingImage():
+    image = pygame.Surface((13, 13))
+    image.fill((255, 255, 255))
+
+    eyebrow =pygame.Surface((3, 2))
+    eyebrow.set_at((0, 1), (255, 255, 255))
+    eyebrow.set_at((1, 1), (255, 255, 255))
+    eyebrow.set_at((2, 0), (255, 255, 255))
+
+    image.blit(eyebrow, (2, 1))
+    image.blit(pygame.transform.flip(eyebrow, True, False), (8, 1))
+
+    eye = pygame.Surface((4, 4))
+    eye.fill((0, 0, 0))
+    eye.fill((150, 150, 150), (0, 0, 2, 2))
+    eye.fill((150, 150, 150), (2, 2, 2, 2))
+
+    eye.set_at((0, 0), (255, 255, 255))
+    eye.set_at((0, 3), (255, 255, 255))
+    eye.set_at((3, 0), (255, 255, 255))
+    eye.set_at((3, 3), (255, 255, 255))
+
+    image.blit(eye, (1, 4))
+    image.blit(eye, (8, 4))
+
+    mouse = pygame.Surface((7, 2), pygame.SRCALPHA, 32)
+    mouse.set_at((0, 0), (0, 0, 0))
+    mouse.set_at((1, 1), (0, 0, 0))
+    mouse.set_at((2, 1), (0, 0, 0))
+    mouse.set_at((3, 0), (0, 0, 0))
+    mouse.set_at((4, 1), (0, 0, 0))
+    mouse.set_at((5, 1), (0, 0, 0))
+    mouse.set_at((6, 0), (0, 0, 0))
+
+    image.blit(mouse, (3, 9))
+
+    return image
