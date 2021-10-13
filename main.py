@@ -55,7 +55,6 @@ def main(fps, starting_scene):
 def connect_discord():
     global RPC
     RPC = Presence(875405629651582976)
-    RPC.connect()
 
     start_time = time.time()
 
@@ -77,7 +76,10 @@ def setPygame():
 
 if (__name__ == "__main__"):
     global RPC
-    connect_discord()
+    try:
+        connect_discord()
+    except:
+        pass
 
     pygame.init()
 
@@ -86,4 +88,7 @@ if (__name__ == "__main__"):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     main(300, Scene.StartScene(WIDTH, HEIGHT))
     
-    RPC.close()
+    try:
+        RPC.close()
+    except:
+        pass
